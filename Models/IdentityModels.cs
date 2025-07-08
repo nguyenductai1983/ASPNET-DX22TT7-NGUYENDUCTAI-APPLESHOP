@@ -35,5 +35,7 @@ namespace AppleShop.Models
         {
             return new ApplicationDbContext();
         }
+
+        //public System.Data.Entity.DbSet<AppleShop.Models.ApplicationUser> ApplicationUsers { get; set; }
     }
 }

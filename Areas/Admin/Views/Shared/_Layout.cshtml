@@ -24,16 +24,19 @@
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                             @Html.ActionLink("Dashboard", "Index", "Dashboard", new { area = "Admin" }, new { @class = "nav-link" })
+                            @Html.ActionLink("Dashboard", "Index", "Dashboard", new { area = "Admin" }, new { @class = "nav-link" })
                         </li>
                         <li class="nav-item">
-                               @Html.ActionLink("Quản lý Sản phẩm", "Index", "Products", new { area = "Admin" }, new { @class = "nav-link" })
+                            @Html.ActionLink("Quản lý Sản phẩm", "Index", "Products", new { area = "Admin" }, new { @class = "nav-link" })
                         </li>
                         <li class="nav-item">
-                             @Html.ActionLink("Quản lý Danh mục", "Index", "Categories", new { area = "Admin" }, new { @class = "nav-link" })
+                            @Html.ActionLink("Quản lý Danh mục", "Index", "Categories", new { area = "Admin" }, new { @class = "nav-link" })
                         </li>
                         <li class="nav-item">
                             @Html.ActionLink("Quản lý Đơn hàng", "Index", "Orders", new { area = "Admin" }, new { @class = "nav-link" })
+                        </li>
+                        <li class="nav-item">
+                            @Html.ActionLink("Quản lý Người dùng", "Index", "Users", new { area = "Admin" }, new { @class = "nav-link" })
                         </li>
                     </ul>
                 </div>

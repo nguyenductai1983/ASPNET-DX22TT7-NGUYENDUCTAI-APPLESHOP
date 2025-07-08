@@ -1,0 +1,28 @@
+﻿@model IEnumerable<AppleShop.Models.ApplicationUser>
+
+@{
+    ViewBag.Title = "Quản lý Người dùng";
+}
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Email / Username</th>
+        <th>Họ Tên</th>
+        <th>Số điện thoại</th>
+        <th>Hành động</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Email)</td>
+            <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+            <td>@Html.DisplayFor(modelItem => item.PhoneNumber)</td>
+            <td>
+                @* Chức năng sửa Role và xóa sẽ phức tạp hơn *@
+                @Html.ActionLink("Sửa", "Edit", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" }) |
+                @Html.ActionLink("Khóa", "Delete", new { id = item.Id }, new { @class = "btn btn-danger btn-sm" })
+            </td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,42 @@
+﻿@model IEnumerable<AppleShop.Models.Order>
+
+@{
+    ViewBag.Title = "Lịch sử đơn hàng";
+}
+
+<div class="container mt-5">
+    <h2>Lịch sử đơn hàng của bạn</h2>
+
+    @if (Model.Any())
+    {
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>Mã Đơn hàng</th>
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>#@order.Id</td>
+                        <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                        <td class="fw-bold">@order.Total.ToString("N0") ₫</td>
+                        <td>
+                            @Html.ActionLink("Xem chi tiết", "Details", "Orders", new { id = order.Id }, new { @class = "btn btn-info btn-sm" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info mt-4">
+            Bạn chưa có đơn hàng nào.
+        </div>
+    }
+</div>

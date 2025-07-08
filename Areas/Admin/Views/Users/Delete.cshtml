@@ -1,0 +1,27 @@
+﻿@model AppleShop.Models.ApplicationUser
+
+@{
+    ViewBag.Title = "Xác nhận Khóa tài khoản";
+}
+
+<h3>Bạn có chắc chắn muốn khóa tài khoản này không?</h3>
+<div>
+    <h4>Tài khoản: @Model.Email</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>@Html.DisplayNameFor(model => model.UserName)</dt>
+        <dd>@Html.DisplayFor(model => model.UserName)</dd>
+        <dt>@Html.DisplayNameFor(model => model.PhoneNumber)</dt>
+        <dd>@Html.DisplayFor(model => model.PhoneNumber)</dd>
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Xác nhận Khóa" class="btn btn-danger" /> |
+            @Html.ActionLink("Quay lại Danh sách", "Index", null, new { @class = "btn btn-secondary" })
+        </div>
+    }
+</div>
