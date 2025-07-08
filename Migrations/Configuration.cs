@@ -7,6 +7,8 @@
     using System.Collections.Generic;
     using Microsoft.AspNet.Identity.EntityFramework;
     using AppleShop.Models;
+    using Microsoft.AspNet.Identity;
+    using Microsoft.AspNet.Identity.EntityFramework;
     internal sealed class Configuration : DbMigrationsConfiguration<AppleShop.Models.ApplicationDbContext>
     {
         public Configuration()
@@ -16,6 +18,35 @@
 
         protected override void Seed(AppleShop.Models.ApplicationDbContext context)
         {
+            // --- BẮT ĐẦU CODE TẠO ROLE VÀ ADMIN USER ---
+            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+
+            // Tạo role "Admin" nếu nó chưa tồn tại
+            if (!roleManager.RoleExists("Admin"))
+            {
+                var role = new IdentityRole();
+                role.Name = "Admin";
+                roleManager.Create(role);
+            }
+
+            // Tạo user "admin@youremail.com" nếu nó chưa tồn tại
+            var user = userManager.FindByName("admin@appleshop.com");
+            if (user == null)
+            {
+                user = new ApplicationUser
+                {
+                    UserName = "admin@appleshop.com",
+                    Email = "admin@appleshop.com",
+                };
+                var result = userManager.Create(user, "Admin@123"); // <-- Mật khẩu admin
+
+                if (result.Succeeded)
+                {
+                    // Thêm user vừa tạo vào role "Admin"
+                    userManager.AddToRole(user.Id, "Admin");
+                }
+            }
             // Thêm Category mẫu
             var categories = new List<Category>
     {
