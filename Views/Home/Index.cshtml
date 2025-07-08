@@ -1,0 +1,39 @@
+﻿@* Khai báo model mà View này sẽ nhận từ Controller *@
+@model IEnumerable<AppleShop.Models.Product>
+
+@{
+    ViewBag.Title = "Trang chủ";
+}
+
+<div class="container mt-4">
+    <div class="p-5 mb-4 bg-light rounded-3 text-center">
+        <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Chào mừng đến AppleShop</h1>
+            <p class="fs-4">Nơi mua sắm các sản phẩm Apple chính hãng với giá tốt nhất.</p>
+        </div>
+    </div>
+
+    <h2 class="mb-4">Sản phẩm nổi bật</h2>
+
+    <div class="row">
+        @* Dùng vòng lặp để hiển thị mỗi sản phẩm là một card *@
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="@product.ImageUrl" class="card-img-top p-3" alt="@product.Name" style="max-height: 300px; object-fit: contain;">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text text-muted">@product.Category.Name</p>
+                        <h6 class="card-subtitle mb-2 fw-bold">@product.Price.ToString("N0") ₫</h6>
+                        <div class="mt-auto">
+                            @* Các nút bấm sẽ được thêm chức năng ở các bước sau *@
+                            @Html.ActionLink("Xem chi tiết", "Details", "Products", new { id = product.Id }, new { @class = "btn btn-primary" })
+                            <a href="#" class="btn btn-outline-success">Thêm vào giỏ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,41 @@
+﻿@using Microsoft.AspNet.Identity
+
+@* Dùng chung một form cho việc đăng xuất *@
+@using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@if (Request.IsAuthenticated)
+{
+    // --- GIAO DIỆN KHI ĐÃ ĐĂNG NHẬP ---
+    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                @* Thay vì chỉ "Hello", bạn có thể hiển thị tên đầy đủ nếu đã lưu trong DB *@
+                Xin chào @User.Identity.GetUserName()!
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li>@Html.ActionLink("Quản lý tài khoản", "Index", "Manage", routeValues: null, htmlAttributes: new { @class = "dropdown-item" })</li>
+                <li>@Html.ActionLink("Đơn hàng của tôi", "Index", "Orders", routeValues: null, htmlAttributes: new { @class = "dropdown-item" })</li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    @* Dùng javascript để submit form đăng xuất đã tạo ở trên *@
+                    <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()">Đăng xuất</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+}
+else
+{
+    // --- GIAO DIỆN KHI CHƯA ĐĂNG NHẬP ---
+    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+            @Html.ActionLink("Đăng ký", "Register", "Account", routeValues: null, htmlAttributes: new { @class = "nav-link" })
+        </li>
+        <li class="nav-item">
+            @Html.ActionLink("Đăng nhập", "Login", "Account", routeValues: null, htmlAttributes: new { @class = "nav-link" })
+        </li>
+    </ul>
+}
