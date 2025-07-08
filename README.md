@@ -8,5 +8,5 @@ Dự án được xây dựng với ASP.NET Core MVC và Entity Framework Core.
 ### Email: nguyenductai1983@gmail.com
 ### SĐT: 0906 585 600
 
-# Công nghệ sử dụng
+## Công nghệ sử dụng
 C#, ASP.NET Core MVC, Entity Framework Core, SQL Server, Bootstrap, jQuery, Font Awesome

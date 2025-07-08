@@ -27,9 +27,9 @@
                         <p class="card-text text-muted">@product.Category.Name</p>
                         <h6 class="card-subtitle mb-2 fw-bold">@product.Price.ToString("N0") ₫</h6>
                         <div class="mt-auto">
-                            @* Các nút bấm sẽ được thêm chức năng ở các bước sau *@
+                            
                             @Html.ActionLink("Xem chi tiết", "Details", "Products", new { id = product.Id }, new { @class = "btn btn-primary" })
-                            <a href="#" class="btn btn-outline-success">Thêm vào giỏ</a>
+                            <a href="@Url.Action("AddToCart", "ShoppingCart", new { productId = product.Id })" class="btn btn-outline-success">Thêm vào giỏ</a>
                         </div>
                     </div>
                 </div>
