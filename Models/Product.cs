@@ -13,6 +13,7 @@ namespace AppleShop.Models
         [Required]
         public decimal Price { get; set; }
         public string ImageUrl { get; set; }
+        public bool IsFeatured { get; set; }
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; }

@@ -164,6 +164,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
@@ -174,6 +175,14 @@
     <Compile Include="Migrations\202507080129088_InitialCreate.cs" />
     <Compile Include="Migrations\202507080129088_InitialCreate.designer.cs">
       <DependentUpon>202507080129088_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507080332476_AddDescriptionAndImageToCategory.cs" />
+    <Compile Include="Migrations\202507080332476_AddDescriptionAndImageToCategory.Designer.cs">
+      <DependentUpon>202507080332476_AddDescriptionAndImageToCategory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507080339078_AddIsFeaturedToProduct.cs" />
+    <Compile Include="Migrations\202507080339078_AddIsFeaturedToProduct.Designer.cs">
+      <DependentUpon>202507080339078_AddIsFeaturedToProduct.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -288,12 +297,12 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Products\Create.cshtml" />
-    <Content Include="Views\Products\Delete.cshtml" />
     <Content Include="Views\Products\Details.cshtml" />
-    <Content Include="Views\Products\Edit.cshtml" />
     <Content Include="Views\Products\Index.cshtml" />
     <Content Include="Views\ShoppingCart\Index.cshtml" />
+    <Content Include="Views\ShoppingCart\_CartSummary.cshtml" />
+    <Content Include="Views\Products\ListByCategory.cshtml" />
+    <Content Include="Views\Categories\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -304,6 +313,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202507080129088_InitialCreate.resx">
       <DependentUpon>202507080129088_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507080332476_AddDescriptionAndImageToCategory.resx">
+      <DependentUpon>202507080332476_AddDescriptionAndImageToCategory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507080339078_AddIsFeaturedToProduct.resx">
+      <DependentUpon>202507080339078_AddIsFeaturedToProduct.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

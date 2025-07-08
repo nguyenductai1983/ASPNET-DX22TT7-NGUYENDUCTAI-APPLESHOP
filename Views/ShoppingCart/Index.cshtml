@@ -28,13 +28,11 @@
                         <td>@item.ProductName</td>
                         <td>@item.Price.ToString("N0") ₫</td>
                         <td>
-                            @* Chức năng cập nhật số lượng sẽ làm sau *@
-                            <input type="number" value="@item.Quantity" class="form-control" style="width: 80px;" />
+                            <input type="number" value="@item.Quantity" class="form-control quantity-input" style="width: 80px;" data-id="@item.ProductId" min="0" />
                         </td>
-                        <td>@item.Total.ToString("N0") ₫</td>
+                        <td id="total-@item.ProductId">@item.Total.ToString("N0") ₫</td>
                         <td>
-                            @* Chức năng xóa sẽ làm sau *@
-                            <a href="#" class="btn btn-danger btn-sm">Xóa</a>
+                            @Html.ActionLink("Xóa", "RemoveFromCart", new { productId = item.ProductId }, new { @class = "btn btn-danger btn-sm" })
                         </td>
                     </tr>
                 }
@@ -42,7 +40,7 @@
             <tfoot>
                 <tr>
                     <td colspan="4" class="text-end fw-bold fs-5">Tổng tiền</td>
-                    <td colspan="2" class="fw-bold fs-5 text-danger">@Model.GrandTotal.ToString("N0") ₫</td>
+                    <td colspan="2" class="fw-bold fs-5 text-danger" id="grand-total">@Model.GrandTotal.ToString("N0") ₫</td>
                 </tr>
             </tfoot>
         </table>
@@ -59,3 +57,44 @@
         </div>
     }
 </div>
+@section scripts {
+    <script>
+    $(document).ready(function () {
+        // Bắt sự kiện khi người dùng thay đổi số lượng
+        $(".quantity-input").on("change", function () {
+            var productId = $(this).data("id");
+            var quantity = $(this).val();
+
+            if (quantity < 0) {
+                $(this).val(0); // Không cho phép số âm
+                quantity = 0;
+            }
+
+            var row = $(this).closest("tr");
+
+            $.ajax({
+                url: '@Url.Action("UpdateCart", "ShoppingCart")',
+                type: 'POST',
+                data: {
+                    productId: productId,
+                    quantity: quantity
+                },
+                success: function (result) {
+                    if (result.success) {
+                        // Nếu số lượng là 0, xóa hàng đó khỏi bảng
+                        if (quantity == 0) {
+                            row.fadeOut(300, function() { $(this).remove(); });
+                        }
+                        // Tải lại trang để cập nhật tổng tiền và cart summary
+                        // Đây là cách đơn giản nhất, bạn có thể cải tiến để chỉ cập nhật các phần tử
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    alert("Đã có lỗi xảy ra. Vui lòng thử lại.");
+                }
+            });
+        });
+    });
+    </script>
+}

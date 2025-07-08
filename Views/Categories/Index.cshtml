@@ -1,0 +1,32 @@
+﻿@model IEnumerable<AppleShop.Models.Category>
+
+@{
+    ViewBag.Title = "Tất cả danh mục";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Tất Cả Danh Mục Sản Phẩm</h2>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        @foreach (var category in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="@category.ImageUrl" class="card-img-top" alt="@category.Name" style="height: 300px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@category.Name</h5>
+                        <p class="card-text">@category.Description</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        @Html.ActionLink(
+                           "Xem sản phẩm " + category.Name,
+                           "ListByCategory",
+                           "Products",
+                           new { categoryId = category.Id },
+                           new { @class = "btn btn-primary" }
+                       )
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

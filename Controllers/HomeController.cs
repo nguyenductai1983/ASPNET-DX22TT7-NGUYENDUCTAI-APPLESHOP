@@ -16,13 +16,11 @@ namespace AppleShop.Controllers
         }
         public ActionResult Index()
         {
-            // Lấy danh sách sản phẩm từ DB
-            // Include("Category") để lấy luôn thông tin danh mục liên quan
-            var upcomingProducts = _context.Products
-                .Include(p => p.Category)
-                .ToList();
-
-            return View(upcomingProducts);
+            var featuredProducts = _context.Products
+         .Where(p => p.IsFeatured)
+         .Include(p => p.Category)
+         .ToList();
+            return View(featuredProducts);
         }
 
         public ActionResult About()

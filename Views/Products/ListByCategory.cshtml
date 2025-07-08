@@ -1,0 +1,37 @@
+﻿@model IEnumerable<AppleShop.Models.Product>
+
+@{
+    ViewBag.Title = "Danh mục " + ViewBag.CategoryName;
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Sản phẩm thuộc danh mục: <span class="text-primary">@ViewBag.CategoryName</span></h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning" role="alert">
+            Chưa có sản phẩm nào trong danh mục này.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var product in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="@product.ImageUrl" class="card-img-top p-3" alt="@product.Name" style="max-height: 300px; object-fit: contain;">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@product.Name</h5>
+                            <h6 class="card-subtitle mb-2 fw-bold">@product.Price.ToString("N0") ₫</h6>
+                            <div class="mt-auto">
+                                @Html.ActionLink("Xem chi tiết", "Details", "Products", new { id = product.Id }, new { @class = "btn btn-primary" })
+                                <a href="@Url.Action("AddToCart", "ShoppingCart", new { productId = product.Id })" class="btn btn-outline-success">Thêm vào giỏ</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

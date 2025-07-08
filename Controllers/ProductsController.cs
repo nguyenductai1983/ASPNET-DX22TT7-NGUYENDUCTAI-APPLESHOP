@@ -120,7 +120,29 @@ namespace AppleShop.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+        // GET: Products/ListByCategory/5
+        public ActionResult ListByCategory(int categoryId)
+        {
+            // Lấy danh sách sản phẩm thuộc categoryId
+            var products = db.Products
+                .Where(p => p.CategoryId == categoryId)
+                .Include(p => p.Category)
+                .ToList();
 
+            // Lấy tên của Category để hiển thị ra tiêu đề
+            var category = db.Categories.Find(categoryId);
+            if (category != null)
+            {
+                ViewBag.CategoryName = category.Name;
+            }
+            else
+            {
+                // Nếu không tìm thấy category, có thể hiển thị thông báo lỗi
+                return HttpNotFound("Không tìm thấy danh mục này.");
+            }
+
+            return View(products);
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)
