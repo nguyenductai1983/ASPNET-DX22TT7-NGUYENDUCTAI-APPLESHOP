@@ -8,6 +8,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using AppleShop.Models;
+using System.IO;
 
 namespace AppleShop.Areas.Admin.Controllers
 {
@@ -23,20 +24,23 @@ namespace AppleShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/Categories/Details/5
-        public async Task<ActionResult> Details(int? id)
+        // GET: Admin/Categories/Details/5
+        public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = await db.Categories.FindAsync(id);
+
+            // Sử dụng .Include(c => c.Products) để lấy kèm danh sách sản phẩm
+            Category category = db.Categories.Include(c => c.Products).SingleOrDefault(c => c.Id == id);
+
             if (category == null)
             {
                 return HttpNotFound();
             }
             return View(category);
         }
-
         // GET: Admin/Categories/Create
         public ActionResult Create()
         {
@@ -48,12 +52,31 @@ namespace AppleShop.Areas.Admin.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Name,ImageUrl,Description")] Category category)
+        // POST: Admin/Categories/Create
+       
+        public ActionResult Create([Bind(Include = "Id,Name,Description")] Category category, HttpPostedFileBase ImageFile)
         {
             if (ModelState.IsValid)
             {
+                // Xử lý upload file hình ảnh
+                if (ImageFile != null && ImageFile.ContentLength > 0)
+                {
+                    var fileName = Path.GetFileName(ImageFile.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Content/Images/Categories"), fileName);
+
+                    // Tạo thư mục nếu chưa tồn tại
+                    var folder = Server.MapPath("~/Content/Images/Categories");
+                    if (!Directory.Exists(folder))
+                    {
+                        Directory.CreateDirectory(folder);
+                    }
+
+                    ImageFile.SaveAs(path);
+                    category.ImageUrl = "/Content/Images/Categories/" + fileName;
+                }
+
                 db.Categories.Add(category);
-                await db.SaveChangesAsync();
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -78,19 +101,37 @@ namespace AppleShop.Areas.Admin.Controllers
         // POST: Admin/Categories/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Admin/Categories/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,ImageUrl,Description")] Category category)
+        public ActionResult Edit([Bind(Include = "Id,Name,ImageUrl,Description")] Category category, HttpPostedFileBase ImageFile)
         {
             if (ModelState.IsValid)
             {
+                // Xử lý upload file hình ảnh MỚI (nếu có)
+                if (ImageFile != null && ImageFile.ContentLength > 0)
+                {
+                    var fileName = Path.GetFileName(ImageFile.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Content/Images/Categories"), fileName);
+                    var folder = Server.MapPath("~/Content/Images/Categories");
+                    if (!Directory.Exists(folder))
+                    {
+                        Directory.CreateDirectory(folder);
+                    }
+                    // Lưu file mới
+                    ImageFile.SaveAs(path);
+
+                    // Cập nhật lại đường dẫn ảnh trong model
+                    category.ImageUrl = "/Content/Images/Categories/" + fileName;
+                }
+                // Nếu không có file mới được tải lên, trường category.ImageUrl (từ hidden field) sẽ giữ nguyên giá trị cũ.
+
                 db.Entry(category).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(category);
         }
-
         // GET: Admin/Categories/Delete/5
         public async Task<ActionResult> Delete(int? id)
         {

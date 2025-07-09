@@ -2,5 +2,48 @@
     ViewBag.Title = "Admin Dashboard";
 }
 
-<h2>Chào mừng đến trang Quản trị</h2>
-<p>Đây là nơi bạn quản lý nội dung của trang web.</p>
+<div class="row">
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card text-center h-100 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-box-seam fs-1 text-primary"></i>
+                <h5 class="card-title mt-3">Quản lý Sản phẩm</h5>
+                <p class="card-text">Thêm, sửa, xóa và cập nhật thông tin các sản phẩm.</p>
+                <a href="@Url.Action("Index", "Products", new { area = "Admin" })" class="btn btn-primary">Đi đến</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card text-center h-100 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-tags fs-1 text-success"></i>
+                <h5 class="card-title mt-3">Quản lý Danh mục</h5>
+                <p class="card-text">Quản lý các danh mục sản phẩm của cửa hàng.</p>
+                <a href="@Url.Action("Index", "Categories", new { area = "Admin" })" class="btn btn-success">Đi đến</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card text-center h-100 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-receipt fs-1 text-warning"></i>
+                <h5 class="card-title mt-3">Quản lý Đơn hàng</h5>
+                <p class="card-text">Xem và xử lý các đơn hàng do khách hàng đặt.</p>
+                <a href="@Url.Action("Index", "Orders", new { area = "Admin" })" class="btn btn-warning">Đi đến</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card text-center h-100 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-people fs-1 text-danger"></i>
+                <h5 class="card-title mt-3">Quản lý Người dùng</h5>
+                <p class="card-text">Quản lý tài khoản và phân quyền cho người dùng.</p>
+                <a href="@Url.Action("Index", "Users", new { area = "Admin" })" class="btn btn-danger">Đi đến</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -2,7 +2,8 @@
     <li class="nav-item">
         <a href="@Url.Action("Index", "ShoppingCart")" class="btn btn-outline-light position-relative me-2">
             <i class="bi bi-cart-fill"></i>
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            <span id="cart-summary-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                @* <-- THÊM ID VÀO ĐÂY *@
                 @ViewBag.CartCount
                 <span class="visually-hidden">items in cart</span>
             </span>

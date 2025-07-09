@@ -8,7 +8,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using AppleShop.Models;
-
+using System.IO;
 namespace AppleShop.Areas.Admin.Controllers
 {
     [Authorize(Roles = "Admin")]
@@ -50,10 +50,31 @@ namespace AppleShop.Areas.Admin.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Name,Description,Price,ImageUrl,IsFeatured,CategoryId")] Product product)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Name,Description,Price,ImageUrl,IsFeatured,CategoryId")] Product product, HttpPostedFileBase ImageFile)
         {
             if (ModelState.IsValid)
             {
+                // Xử lý upload file hình ảnh
+                if (ImageFile != null && ImageFile.ContentLength > 0)
+                {
+                    // Lấy tên file
+                    var fileName = Path.GetFileName(ImageFile.FileName);
+                    // Tạo đường dẫn lưu file trên server
+                    var path = Path.Combine(Server.MapPath("~/Content/Images/Products"), fileName);
+
+                    // Kiểm tra nếu thư mục không tồn tại thì tạo mới
+                    var folder = Server.MapPath("~/Content/Images/Products");
+                    if (!Directory.Exists(folder))
+                    {
+                        Directory.CreateDirectory(folder);
+                    }
+
+                    // Lưu file
+                    ImageFile.SaveAs(path);
+
+                    // Gán đường dẫn file ảnh vào model
+                    product.ImageUrl = "/Content/Images/Products/" + fileName;
+                }
                 db.Products.Add(product);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -84,10 +105,29 @@ namespace AppleShop.Areas.Admin.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Description,Price,ImageUrl,IsFeatured,CategoryId")] Product product)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Description,Price,ImageUrl,IsFeatured,CategoryId")] Product product, HttpPostedFileBase ImageFile)
         {
             if (ModelState.IsValid)
             {
+                // Xử lý upload file hình ảnh MỚI (nếu có)
+                if (ImageFile != null && ImageFile.ContentLength > 0)
+                {
+                    // Lấy tên file
+                    var fileName = Path.GetFileName(ImageFile.FileName);
+                    // Tạo đường dẫn lưu file trên server
+                    var path = Path.Combine(Server.MapPath("~/Content/Images/Products"), fileName);
+                    // Kiểm tra nếu thư mục không tồn tại thì tạo mới
+                    var folder = Server.MapPath("~/Content/Images/Products");
+                    if (!Directory.Exists(folder))
+                    {
+                        Directory.CreateDirectory(folder);
+                    }
+                    // Lưu file mới
+                    ImageFile.SaveAs(path);
+
+                    // Cập nhật lại đường dẫn ảnh trong model
+                    product.ImageUrl = "/Content/Images/Products/" + fileName;
+                }
                 db.Entry(product).State = EntityState.Modified;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");

@@ -66,6 +66,35 @@ namespace AppleShop.Controllers
             // Chuyển hướng về trang giỏ hàng
             return RedirectToAction("Index");
         }
+        
+        [HttpPost]
+        public ActionResult AddToCart(int productId, int quantity = 1)
+        {
+            List<CartItem> cart = Session["Cart"] as List<CartItem>;
+            if (cart == null)
+            {
+                cart = new List<CartItem>();
+            }
+
+            CartItem item = cart.FirstOrDefault(c => c.ProductId == productId);
+            if (item == null)
+            {
+                var productToAdd = _context.Products.Find(productId);
+                if (productToAdd != null)
+                {
+                    var newItem = new CartItem(productToAdd);
+                    newItem.Quantity = quantity; // Gán số lượng mới
+                    cart.Add(newItem);
+                }
+            }
+            else
+            {
+                item.Quantity += quantity; // Cộng thêm số lượng
+            }
+
+            Session["Cart"] = cart;
+            return RedirectToAction("Index");
+        }
         // POST: ShoppingCart/UpdateCart
         [HttpPost]
         public ActionResult UpdateCart(int productId, int quantity)
@@ -75,7 +104,6 @@ namespace AppleShop.Controllers
 
             if (itemToUpdate != null)
             {
-                // Nếu số lượng > 0 thì cập nhật, ngược lại thì xóa
                 if (quantity > 0)
                 {
                     itemToUpdate.Quantity = quantity;
@@ -87,10 +115,19 @@ namespace AppleShop.Controllers
             }
             Session["Cart"] = cart;
 
-            // Trả về kết quả JSON để xử lý bằng AJAX
-            return Json(new { success = true });
-        }
+            // Tính toán các giá trị mới để trả về cho client
+            decimal itemTotal = itemToUpdate?.Total ?? 0;
+            decimal grandTotal = cart.Sum(i => i.Total);
+            int cartCount = cart.Sum(i => i.Quantity);
 
+            return Json(new
+            {
+                success = true,
+                itemTotal = itemTotal.ToString("N0"),
+                grandTotal = grandTotal.ToString("N0"),
+                cartCount = cartCount
+            });
+        }
         // GET: ShoppingCart/RemoveFromCart
         public ActionResult RemoveFromCart(int productId)
         {

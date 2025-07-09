@@ -60,17 +60,20 @@
 @section scripts {
     <script>
     $(document).ready(function () {
-        // Bắt sự kiện khi người dùng thay đổi số lượng
+        // Hàm cập nhật giỏ hàng trên thanh navbar
+        function updateCartSummary(count) {
+            $("#cart-summary-badge").text(count);
+        }
+
         $(".quantity-input").on("change", function () {
             var productId = $(this).data("id");
-            var quantity = $(this).val();
+            var quantity = parseInt($(this).val());
+            var row = $(this).closest("tr");
 
             if (quantity < 0) {
-                $(this).val(0); // Không cho phép số âm
+                $(this).val(0);
                 quantity = 0;
             }
-
-            var row = $(this).closest("tr");
 
             $.ajax({
                 url: '@Url.Action("UpdateCart", "ShoppingCart")',
@@ -81,17 +84,27 @@
                 },
                 success: function (result) {
                     if (result.success) {
-                        // Nếu số lượng là 0, xóa hàng đó khỏi bảng
                         if (quantity == 0) {
-                            row.fadeOut(300, function() { $(this).remove(); });
+                            // Nếu số lượng là 0, xóa hàng khỏi bảng
+                            row.fadeOut(300, function () {
+                                $(this).remove();
+                                // Cập nhật lại tổng tiền sau khi xóa
+                                $("#grand-total").text(result.grandTotal + ' ₫');
+                            });
+                        } else {
+                            // Cập nhật thành tiền của sản phẩm
+                            $("#total-" + productId).text(result.itemTotal + ' ₫');
+                            // Cập nhật tổng tiền của giỏ hàng
+                            $("#grand-total").text(result.grandTotal + ' ₫');
                         }
-                        // Tải lại trang để cập nhật tổng tiền và cart summary
-                        // Đây là cách đơn giản nhất, bạn có thể cải tiến để chỉ cập nhật các phần tử
-                        location.reload();
+                        // Cập nhật số lượng trên icon giỏ hàng ở navbar
+                        updateCartSummary(result.cartCount);
                     }
                 },
                 error: function () {
                     alert("Đã có lỗi xảy ra. Vui lòng thử lại.");
+                    // Nếu lỗi thì tải lại trang để đảm bảo dữ liệu đúng
+                    location.reload();
                 }
             });
         });

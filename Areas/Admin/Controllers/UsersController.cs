@@ -75,17 +75,36 @@ namespace AppleShop.Areas.Admin.Controllers
                     return HttpNotFound();
                 }
 
+                // --- BẮT ĐẦU LOGIC XỬ LÝ MẬT KHẨU MỚI ---
+                // Chỉ thực hiện đổi mật khẩu nếu trường NewPassword được nhập
+                if (!string.IsNullOrEmpty(model.NewPassword))
+                {
+                    // Xóa mật khẩu cũ trước
+                    if (await _userManager.HasPasswordAsync(user.Id))
+                    {
+                        await _userManager.RemovePasswordAsync(user.Id);
+                    }
+                    // Thêm mật khẩu mới
+                    var result = await _userManager.AddPasswordAsync(user.Id, model.NewPassword);
+
+                    if (!result.Succeeded)
+                    {
+                        // Nếu có lỗi, thêm lỗi vào ModelState và hiển thị lại form
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError("", error);
+                        }
+                        model.AllRoles = _roleManager.Roles.ToList().Select(r => new SelectListItem { Text = r.Name, Value = r.Name });
+                        return View(model);
+                    }
+                }
+                // --- KẾT THÚC LOGIC XỬ LÝ MẬT KHẨU ---
+
+                // Xử lý vai trò (giữ nguyên như cũ)
                 var userRoles = await _userManager.GetRolesAsync(user.Id);
-                var allRoles = _roleManager.Roles.ToList().Select(r => r.Name);
-
-                // Nếu UserRoles là null (không có checkbox nào được chọn), khởi tạo nó
                 model.UserRoles = model.UserRoles ?? new List<string>();
-
-                // Xóa các role cũ mà người dùng không còn được chọn
                 var rolesToRemove = userRoles.Except(model.UserRoles).ToArray();
                 await _userManager.RemoveFromRolesAsync(user.Id, rolesToRemove);
-
-                // Thêm các role mới được chọn
                 var rolesToAdd = model.UserRoles.Except(userRoles).ToArray();
                 await _userManager.AddToRolesAsync(user.Id, rolesToAdd);
 

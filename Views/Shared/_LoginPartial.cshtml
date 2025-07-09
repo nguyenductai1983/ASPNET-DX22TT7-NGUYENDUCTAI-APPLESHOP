@@ -8,19 +8,23 @@
 
 @if (Request.IsAuthenticated)
 {
-    // --- GIAO DIỆN KHI ĐÃ ĐĂNG NHẬP ---
+    
     <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                @* Thay vì chỉ "Hello", bạn có thể hiển thị tên đầy đủ nếu đã lưu trong DB *@
+                
                 Xin chào @User.Identity.GetUserName()!
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                @if (User.IsInRole("Admin"))
+                {
+                    <li>@Html.ActionLink("Trang Quản trị", "Index", "Dashboard", new { area = "Admin" }, new { @class = "dropdown-item" })</li>
+                    <li><hr class="dropdown-divider"></li>
+}
                 <li>@Html.ActionLink("Quản lý tài khoản", "Index", "Manage", routeValues: null, htmlAttributes: new { @class = "dropdown-item" })</li>
                 <li>@Html.ActionLink("Đơn hàng của tôi", "Index", "Orders", routeValues: null, htmlAttributes: new { @class = "dropdown-item" })</li>
                 <li><hr class="dropdown-divider"></li>
-                <li>
-                    @* Dùng javascript để submit form đăng xuất đã tạo ở trên *@
+                <li>                   
                     <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()">Đăng xuất</a>
                 </li>
             </ul>
@@ -29,7 +33,7 @@
 }
 else
 {
-    // --- GIAO DIỆN KHI CHƯA ĐĂNG NHẬP ---
+    
     <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item">
             @Html.ActionLink("Đăng ký", "Register", "Account", routeValues: null, htmlAttributes: new { @class = "nav-link" })

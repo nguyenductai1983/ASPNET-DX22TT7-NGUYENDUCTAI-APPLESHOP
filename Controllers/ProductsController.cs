@@ -28,13 +28,28 @@ namespace AppleShop.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            //Product product = db.Products.Find(id);
+
             Product product = db.Products.Include(p => p.Category).SingleOrDefault(p => p.Id == id);
+
             if (product == null)
             {
                 return HttpNotFound();
             }
-            return View(product);
+
+            // Lấy các sản phẩm liên quan (cùng danh mục, trừ sản phẩm hiện tại)
+            var relatedProducts = db.Products
+                                      .Where(p => p.CategoryId == product.CategoryId && p.Id != id)
+                                      .Take(4) // Lấy 4 sản phẩm
+                                      .ToList();
+
+            // Tạo ViewModel và gán dữ liệu
+            var viewModel = new ProductDetailViewModel
+            {
+                Product = product,
+                RelatedProducts = relatedProducts
+            };
+
+            return View(viewModel);
         }
 
         // GET: Products/Create

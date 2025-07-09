@@ -1,66 +1,58 @@
 ﻿@model AppleShop.Models.Product
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Chi tiết sản phẩm";
 }
 
-<h2>Details</h2>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">@ViewBag.Title: @Model.Name</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <dl class="row">
+                    <dt class="col-sm-4">Tên sản phẩm</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Name)</dd>
 
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Category.Name)
-        </dt>
+                    <dt class="col-sm-4">Danh mục</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Category.Name)</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Category.Name)
-        </dd>
+                    <dt class="col-sm-4">Giá</dt>
+                    <dd class="col-sm-8">@Model.Price.ToString("N0") ₫</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
+                    <dt class="col-sm-4">Mô tả</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Description)</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
+                    <dt class="col-sm-4">Sản phẩm nổi bật?</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsFeatured)
+                        {
+                            <span class="badge bg-success">Có</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Không</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ImageUrl)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ImageUrl)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.IsFeatured)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.IsFeatured)
-        </dd>
-
-    </dl>
+            <div class="col-md-4">
+                <h5 class="text-center">Hình ảnh</h5>
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm" alt="@Model.Name" />
+                }
+                else
+                {
+                    <div class="text-center text-muted">Chưa có hình ảnh</div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        @Html.ActionLink("Sửa", "Edit", new { id = Model.Id }, new { @class = "btn btn-warning" })
+        @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-secondary" })
+    </div>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
