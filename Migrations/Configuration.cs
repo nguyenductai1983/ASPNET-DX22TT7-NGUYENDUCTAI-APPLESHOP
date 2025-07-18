@@ -13,40 +13,51 @@
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(AppleShop.Models.ApplicationDbContext context)
         {
-            // --- BẮT ĐẦU CODE TẠO ROLE VÀ ADMIN USER ---
+            // --- BẮT ĐẦU CODE TẠO ROLE VÀ ADMIN USER (PHIÊN BẢN CẢI TIẾN) ---
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+            string roleName = "Admin";
+            string adminEmail = "admin@appleshop.com";
+            string adminPassword = "Admin@123";
 
-            // Tạo role "Admin" nếu nó chưa tồn tại
-            if (!roleManager.RoleExists("Admin"))
+            // 1. Tạo role "Admin" nếu nó chưa tồn tại
+            if (!roleManager.RoleExists(roleName))
             {
-                var role = new IdentityRole();
-                role.Name = "Admin";
+                var role = new IdentityRole(roleName);
                 roleManager.Create(role);
             }
 
-            // Tạo user "admin@youremail.com" nếu nó chưa tồn tại
-            var user = userManager.FindByName("admin@appleshop.com");
+            // 2. Tìm user admin
+            var user = userManager.FindByEmail(adminEmail);
+
+            // 3. Nếu user chưa tồn tại, tạo mới
             if (user == null)
             {
                 user = new ApplicationUser
                 {
-                    UserName = "admin@appleshop.com",
-                    Email = "admin@appleshop.com",
+                    UserName = adminEmail,
+                    Email = adminEmail,
                 };
-                var result = userManager.Create(user, "Admin@123"); // <-- Mật khẩu admin
+                var result = userManager.Create(user, adminPassword);
 
-                if (result.Succeeded)
+                // Nếu tạo user thất bại, ném ra lỗi để dễ dàng debug
+                if (!result.Succeeded)
                 {
-                    // Thêm user vừa tạo vào role "Admin"
-                    userManager.AddToRole(user.Id, "Admin");
+                    throw new System.Data.Entity.Validation.DbEntityValidationException(string.Join(";", result.Errors));
                 }
             }
+
+            // 4. Luôn kiểm tra và thêm user vào role "Admin" nếu chưa có
+            if (!userManager.IsInRole(user.Id, roleName))
+            {
+                userManager.AddToRole(user.Id, roleName);
+            }
+            // --- KẾT THÚC CODE TẠO ROLE VÀ ADMIN USER ---
             // Thêm Category mẫu
             var categories = new List<Category>
     {
@@ -54,13 +65,13 @@
         new Category {
             Name = "iPhone",
             Description = "Khám phá các dòng iPhone mới nhất với hiệu năng đỉnh cao và thiết kế sang trọng.",
-            ImageUrl = "https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-7inch-naturaltitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1692845699232"
+            ImageUrl = "/Content/Images/Categories/iphone 14.jpg"
         },
         // Cập nhật Category "MacBook"
         new Category {
             Name = "MacBook",
             Description = "MacBook siêu mạnh mẽ với chip Apple M series, hoàn hảo cho công việc và sáng tạo.",
-            ImageUrl = "https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mbp14-spaceblack-select-202310?wid=904&hei=840&fmt=jpeg&qlt=90&.v=1697230830200"
+            ImageUrl = "/Content/Images/Categories/macbook.jpg"
         }
     };
             // Phương thức AddOrUpdate sẽ tự động cập nhật các bản ghi có sẵn
@@ -70,9 +81,9 @@
             // Thêm Product mẫu
             var products = new List<Product>
     {
-        new Product { Name = "iPhone 15 Pro Max", Description = "Titan tự nhiên, Chip A17 Pro.", Price = 34990000, CategoryId = categories.Single(c => c.Name == "iPhone").Id, ImageUrl = "https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg",IsFeatured = true },
-        new Product { Name = "iPhone 14 Pro", Description = "Màu Tím sâu, Dynamic Island.", Price = 27990000, CategoryId = categories.Single(c => c.Name == "iPhone").Id, ImageUrl = "https://cdn.tgdd.vn/Products/Images/42/251192/iphone-14-pro-tim-thumb-600x600.jpg" ,IsFeatured = false},
-        new Product { Name = "MacBook Pro M3", Description = "Chip Apple M3, Màn hình Liquid Retina XDR.", Price = 49990000, CategoryId = categories.Single(c => c.Name == "MacBook").Id, ImageUrl = "https://cdn.tgdd.vn/Products/Images/44/318321/macbook-pro-16-inch-m3-pro-2023-18-core-cpu-18gb-512gb-bh-thumb-600x600.jpg",IsFeatured = true }
+        new Product { Name = "iPhone 15 Pro Max", Description = "Titan tự nhiên, Chip A17 Pro.", Price = 34990000, CategoryId = categories.Single(c => c.Name == "iPhone").Id, ImageUrl = "/Content/Images/Products/iphone.jpg",IsFeatured = true },
+        new Product { Name = "iPhone 14 Pro", Description = "Màu Tím sâu, Dynamic Island.", Price = 27990000, CategoryId = categories.Single(c => c.Name == "iPhone").Id, ImageUrl = "/Content/Images/Products/iphone 14.jpg" ,IsFeatured = false},
+        new Product { Name = "MacBook Pro M3", Description = "Chip Apple M3, Màn hình Liquid Retina XDR.", Price = 49990000, CategoryId = categories.Single(c => c.Name == "MacBook").Id, ImageUrl = "/Content/Images/Products/macbook.jpg",IsFeatured = true }
     };
 
             products.ForEach(p => context.Products.AddOrUpdate(s => s.Name, p));

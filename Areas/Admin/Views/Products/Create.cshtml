@@ -4,8 +4,6 @@
     ViewBag.Title = "Tạo sản phẩm mới";
 }
 
-<h2>@ViewBag.Title</h2>
-
 @using (Html.BeginForm("Create", "Products", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()

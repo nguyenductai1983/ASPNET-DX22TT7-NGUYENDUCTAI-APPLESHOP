@@ -1,18 +1,18 @@
 ﻿@using Microsoft.AspNet.Identity
 
 @* Dùng chung một form cho việc đăng xuất *@
-@using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+@using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "d-none" }))
 {
     @Html.AntiForgeryToken()
 }
 
 @if (Request.IsAuthenticated)
 {
-    
+
     <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                
+
                 Xin chào @User.Identity.GetUserName()!
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -20,11 +20,11 @@
                 {
                     <li>@Html.ActionLink("Trang Quản trị", "Index", "Dashboard", new { area = "Admin" }, new { @class = "dropdown-item" })</li>
                     <li><hr class="dropdown-divider"></li>
-}
+                }
                 <li>@Html.ActionLink("Quản lý tài khoản", "Index", "Manage", routeValues: null, htmlAttributes: new { @class = "dropdown-item" })</li>
                 <li>@Html.ActionLink("Đơn hàng của tôi", "Index", "Orders", routeValues: null, htmlAttributes: new { @class = "dropdown-item" })</li>
                 <li><hr class="dropdown-divider"></li>
-                <li>                   
+                <li>
                     <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()">Đăng xuất</a>
                 </li>
             </ul>
@@ -33,7 +33,7 @@
 }
 else
 {
-    
+
     <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item">
             @Html.ActionLink("Đăng ký", "Register", "Account", routeValues: null, htmlAttributes: new { @class = "nav-link" })

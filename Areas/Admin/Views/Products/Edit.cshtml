@@ -4,7 +4,6 @@
     ViewBag.Title = "Chỉnh sửa sản phẩm";
 }
 
-<h2>@ViewBag.Title</h2>
 
 @* Thêm enctype để hỗ trợ upload file *@
 @using (Html.BeginForm("Edit", "Products", FormMethod.Post, new { enctype = "multipart/form-data" }))

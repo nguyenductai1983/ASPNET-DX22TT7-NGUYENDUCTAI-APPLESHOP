@@ -3,9 +3,6 @@
 @{
     ViewBag.Title = "Tạo danh mục mới";
 }
-
-<h2>@ViewBag.Title</h2>
-
 @* Thêm enctype để hỗ trợ upload file *@
 @using (Html.BeginForm("Create", "Categories", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
