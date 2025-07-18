@@ -1,0 +1,62 @@
+﻿@model IEnumerable<AppleShop.Models.Product>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Danh sách Sản phẩm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Danh sách Sản phẩm</h2>
+    <p>Ngày xuất báo cáo: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên sản phẩm</th>
+                <th>Danh mục</th>
+                <th>Giá</th>
+                <th>Nổi bật</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>@item.Category.Name</td>
+                    <td>@item.Price.ToString("N0") ₫</td>
+                    <td>@(item.IsFeatured ? "Có" : "Không")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

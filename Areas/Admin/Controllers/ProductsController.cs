@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using AppleShop.Models;
 using System.IO;
+using PagedList; // Thêm using
+using System.Text; // Thêm using
+using Rotativa; // Thêm using
+
 namespace AppleShop.Areas.Admin.Controllers
 {
     [Authorize(Roles = "Admin")]
@@ -16,21 +19,74 @@ namespace AppleShop.Areas.Admin.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
+        // CẬP NHẬT ACTION INDEX ĐỂ THÊM TÌM KIẾM VÀ PHÂN TRANG
         // GET: Admin/Products
-        public async Task<ActionResult> Index()
+        public ActionResult Index(string searchString, int? page)
         {
             var products = db.Products.Include(p => p.Category);
-            return View(await products.ToListAsync());
+
+            // Tìm kiếm theo tên sản phẩm
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(s => s.Name.Contains(searchString));
+            }
+
+            products = products.OrderBy(p => p.Name);
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            ViewBag.CurrentSearch = searchString; // Lưu lại từ khóa tìm kiếm
+
+            return View(products.ToPagedList(pageNumber, pageSize));
         }
 
+        // THÊM ACTION XUẤT FILE CSV
+        public FileResult ExportToCsv()
+        {
+            var products = db.Products.Include(p => p.Category).ToList();
+            var sb = new StringBuilder();
+            sb.AppendLine("Id,TenSanPham,MoTa,Gia,DanhMuc,NoiBat");
+
+            foreach (var item in products)
+            {
+                string name = SanitizeCsvField(item.Name);
+                string description = SanitizeCsvField(item.Description);
+                sb.AppendLine($"{item.Id},{name},{description},{item.Price},{item.Category.Name},{item.IsFeatured}");
+            }
+
+            byte[] fileBytes = new UTF8Encoding(true).GetBytes(sb.ToString());
+            return File(fileBytes, "text/csv", "DanhSachSanPham.csv");
+        }
+
+        // THÊM ACTION XUẤT FILE PDF
+        public ActionResult ExportToPdf()
+        {
+            var products = db.Products.Include(p => p.Category).ToList();
+            return new ViewAsPdf("ProductsPdf", products)
+            {
+                FileName = "DanhSachSanPham.pdf",
+                PageSize = Rotativa.Options.Size.A4,
+                PageOrientation = Rotativa.Options.Orientation.Portrait,
+                CustomSwitches = "--encoding utf-8"
+            };
+        }
+
+        private string SanitizeCsvField(string field)
+        {
+            if (string.IsNullOrEmpty(field)) return "";
+            if (field.Contains(",")) return $"\"{field}\"";
+            return field;
+        }
+
+
         // GET: Admin/Products/Details/5
-        public async Task<ActionResult> Details(int? id)
+        public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = await db.Products.FindAsync(id);
+            Product product = db.Products.Include(p => p.Category).SingleOrDefault(p => p.Id == id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -46,37 +102,26 @@ namespace AppleShop.Areas.Admin.Controllers
         }
 
         // POST: Admin/Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,Name,Description,Price,ImageUrl,IsFeatured,CategoryId")] Product product, HttpPostedFileBase ImageFile)
+        public ActionResult Create([Bind(Include = "Id,Name,Description,Price,IsFeatured,CategoryId")] Product product, HttpPostedFileBase ImageFile)
         {
             if (ModelState.IsValid)
             {
-                // Xử lý upload file hình ảnh
                 if (ImageFile != null && ImageFile.ContentLength > 0)
                 {
-                    // Lấy tên file
                     var fileName = Path.GetFileName(ImageFile.FileName);
-                    // Tạo đường dẫn lưu file trên server
                     var path = Path.Combine(Server.MapPath("~/Content/Images/Products"), fileName);
-
-                    // Kiểm tra nếu thư mục không tồn tại thì tạo mới
                     var folder = Server.MapPath("~/Content/Images/Products");
                     if (!Directory.Exists(folder))
                     {
                         Directory.CreateDirectory(folder);
                     }
-
-                    // Lưu file
                     ImageFile.SaveAs(path);
-
-                    // Gán đường dẫn file ảnh vào model
                     product.ImageUrl = "/Content/Images/Products/" + fileName;
                 }
                 db.Products.Add(product);
-                await db.SaveChangesAsync();
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -85,13 +130,13 @@ namespace AppleShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/Products/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = await db.Products.FindAsync(id);
+            Product product = db.Products.Find(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -101,35 +146,21 @@ namespace AppleShop.Areas.Admin.Controllers
         }
 
         // POST: Admin/Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Description,Price,ImageUrl,IsFeatured,CategoryId")] Product product, HttpPostedFileBase ImageFile)
+        public ActionResult Edit([Bind(Include = "Id,Name,Description,Price,ImageUrl,IsFeatured,CategoryId")] Product product, HttpPostedFileBase ImageFile)
         {
             if (ModelState.IsValid)
             {
-                // Xử lý upload file hình ảnh MỚI (nếu có)
                 if (ImageFile != null && ImageFile.ContentLength > 0)
                 {
-                    // Lấy tên file
                     var fileName = Path.GetFileName(ImageFile.FileName);
-                    // Tạo đường dẫn lưu file trên server
                     var path = Path.Combine(Server.MapPath("~/Content/Images/Products"), fileName);
-                    // Kiểm tra nếu thư mục không tồn tại thì tạo mới
-                    var folder = Server.MapPath("~/Content/Images/Products");
-                    if (!Directory.Exists(folder))
-                    {
-                        Directory.CreateDirectory(folder);
-                    }
-                    // Lưu file mới
                     ImageFile.SaveAs(path);
-
-                    // Cập nhật lại đường dẫn ảnh trong model
                     product.ImageUrl = "/Content/Images/Products/" + fileName;
                 }
                 db.Entry(product).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
             ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", product.CategoryId);
@@ -137,13 +168,13 @@ namespace AppleShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/Products/Delete/5
-        public async Task<ActionResult> Delete(int? id)
+        public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = await db.Products.FindAsync(id);
+            Product product = db.Products.Find(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -154,11 +185,11 @@ namespace AppleShop.Areas.Admin.Controllers
         // POST: Admin/Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id)
         {
-            Product product = await db.Products.FindAsync(id);
+            Product product = db.Products.Find(id);
             db.Products.Remove(product);
-            await db.SaveChangesAsync();
+            db.SaveChanges();
             return RedirectToAction("Index");
         }
 

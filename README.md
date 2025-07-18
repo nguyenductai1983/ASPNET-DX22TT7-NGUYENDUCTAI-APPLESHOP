@@ -10,6 +10,8 @@ Dự án được xây dựng với ASP.NET Core MVC và Entity Framework Core.
 
 ## Công nghệ sử dụng
 C#, ASP.NET Core MVC, Entity Framework Core, SQL Server, Bootstrap, jQuery, Font Awesome
+## Dữ liệu mẫu nằm trong thư mục gôc
+Schema and data.sql
 ## Thông tin Admin
 user: admin@appleshop.com
 password: Admin@123

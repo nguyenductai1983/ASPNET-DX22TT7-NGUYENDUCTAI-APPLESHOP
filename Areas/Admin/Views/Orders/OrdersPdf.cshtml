@@ -1,0 +1,66 @@
+﻿@model IEnumerable<AppleShop.Models.Order>
+
+@{
+    Layout = null; // Rất quan trọng: không dùng layout chung của trang admin
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Danh sách Đơn hàng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif; /* Dùng font hỗ trợ tiếng Việt */
+            font-size: 10pt;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Danh sách Đơn hàng</h2>
+    <p>Ngày xuất báo cáo: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Mã Đơn</th>
+                <th>Khách hàng</th>
+                <th>Ngày đặt</th>
+                <th>Người nhận</th>
+                <th>Địa chỉ giao</th>
+                <th>Trạng thái</th>
+                <th>Tổng tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.User.Email</td>
+                    <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.ShipName</td>
+                    <td>@item.ShipAddress</td>
+                    <td>@item.Status.ToString()</td>
+                    <td>@item.Total.ToString("N0") ₫</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

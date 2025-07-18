@@ -1,11 +1,39 @@
-﻿@model IEnumerable<AppleShop.Models.Order>
-
+﻿@model PagedList.IPagedList<AppleShop.Models.Order>
+@using PagedList.Mvc;
+@using AppleShop.Models; 
 @{
     ViewBag.Title = "Quản lý Đơn hàng";
 }
+<div class="d-flex justify-content-between align-items-center mb-3">    
+    @* Nhóm các nút xuất file lại với nhau *@
+    <div class="btn-group" role="group">
+        <a href="@Url.Action("ExportToCsv")" class="btn btn-success me-3">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Xuất CSV
+        </a>
+        <a href="@Url.Action("ExportToPdf")" class="btn btn-danger">
+            <i class="bi bi-file-earmark-pdf"></i> Xuất PDF
+        </a>
+    </div>
+</div>
+@* FORM TÌM KIẾM VÀ LỌC *@
+@using (Html.BeginForm("Index", "Orders", FormMethod.Get, new { @class = "row g-3 mb-4" }))
+{
+    <div class="col-md-6">
+        <label for="searchString" class="form-label">Tìm kiếm theo Mã đơn / Email</label>
+        @Html.TextBox("searchString", ViewBag.CurrentSearch as string, new { @class = "form-control", placeholder = "Nhập từ khóa..." })
+    </div>
+    <div class="col-md-4">
+        <label for="statusFilter" class="form-label">Lọc theo Trạng thái</label>
+        @* SỬA LẠI DÒNG NÀY: Dùng Html.DropDownList với SelectList từ ViewBag *@
+        @Html.DropDownList("statusFilter", ViewBag.StatusFilterOptions as SelectList, "Tất cả trạng thái", new { @class = "form-select" })
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Lọc</button>
+    </div>
+}
 
 <table class="table table-bordered table-striped">
-    <tr>
+    <tr class="table-dark">
         <th>Mã Đơn</th>
         <th>Khách hàng</th>
         <th>Ngày đặt</th>
@@ -16,28 +44,42 @@
 
     @foreach (var item in Model)
     {
-<tr>
-    <td>@Html.DisplayFor(modelItem => item.Id)</td>
-    <td>@Html.DisplayFor(modelItem => item.User.Email)</td>
-    <td>@Html.DisplayFor(modelItem => item.OrderDate)</td>
-    <td>@item.Total.ToString("N0") ₫</td>
-    <td>
-
-        @if (item.Status == AppleShop.Models.OrderStatus.Delivered)
-        {<span class="badge bg-success">Đã nhận hàng</span>}
-        else if (item.Status == AppleShop.Models.OrderStatus.Shipped)
-        { <span class="badge bg-info">Đã giao hàng</span>}
-        else if (item.Status == AppleShop.Models.OrderStatus.Processing)
-        { <span class="badge bg-primary">Đang xử lý</span>}
-        else if (item.Status == AppleShop.Models.OrderStatus.Cancelled)
-        { <span class="badge bg-danger">Đã hủy</span>}
-        else
-        { <span class="badge bg-warning">Chờ xử lý</span>}
-    </td>
-    <td>
-        @Html.ActionLink("Sửa", "Edit", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" }) |
-        @Html.ActionLink("Xem Chi tiết", "Details", new { id = item.Id }, new { @class = "btn btn-info btn-sm" })
-    </td>
-</tr>
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Id)</td>
+            <td>@Html.DisplayFor(modelItem => item.User.Email)</td>
+            <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+            <td>@item.Total.ToString("N0") ₫</td>
+            <td>
+                @if (item.Status == AppleShop.Models.OrderStatus.Delivered)
+                {<span class="badge bg-success">Đã nhận hàng</span>}
+                else if (item.Status == AppleShop.Models.OrderStatus.Shipped)
+                { <span class="badge bg-info">Đã giao hàng</span>}
+                else if (item.Status == AppleShop.Models.OrderStatus.Processing)
+                { <span class="badge bg-primary">Đang xử lý</span>}
+                else if (item.Status == AppleShop.Models.OrderStatus.Cancelled)
+                { <span class="badge bg-danger">Đã hủy</span>}
+                else
+                { <span class="badge bg-warning text-dark">Chờ xử lý</span>}
+            </td>
+            <td>
+                @Html.ActionLink("Sửa", "Edit", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })
+                @Html.ActionLink("Chi tiết", "Details", new { id = item.Id }, new { @class = "btn btn-info btn-sm" })
+            </td>
+        </tr>
     }
 </table>
+
+<br />
+<div class="d-flex justify-content-center">
+    @* Cập nhật lại PagedListPager để giữ lại các tham số lọc/tìm kiếm *@
+    @Html.PagedListPager(Model, page => Url.Action("Index",
+        new { page, searchString = ViewBag.CurrentSearch, statusFilter = ViewBag.CurrentStatusFilter }),
+        new PagedListRenderOptions
+        {
+            LiElementClasses = new string[] { "page-item" },
+            UlElementClasses = new string[] { "pagination" }
+        })
+</div>
+<div class="text-center">
+    Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+</div>
