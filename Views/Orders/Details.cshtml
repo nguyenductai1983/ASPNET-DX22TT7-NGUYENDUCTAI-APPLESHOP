@@ -45,8 +45,8 @@
                     <tr>
                         <td>@Html.DisplayFor(modelItem => item.Product.Name)</td>
                         <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
-                        <td>@item.Price.ToString("N0") ₫</td>
-                        <td>@((item.Quantity * item.Price).ToString("N0")) ₫</td>
+                        <td>@item.UnitPrice .ToString("N0") ₫</td>
+                        <td>@((item.Quantity * item.UnitPrice).ToString("N0")) ₫</td>
                     </tr>
                 }
             </tbody>

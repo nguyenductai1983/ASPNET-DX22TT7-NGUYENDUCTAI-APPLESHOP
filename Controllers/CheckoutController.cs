@@ -41,7 +41,8 @@ namespace AppleShop.Controllers
                     ShipName = viewModel.ShipName,
                     ShipAddress = viewModel.ShipAddress,
                     ShipPhoneNumber = viewModel.ShipPhoneNumber,
-                    Total = cart.Sum(i => i.Total)
+                    Total = cart.Sum(i => i.Total),
+                    Status = OrderStatus.Pending
                 };
 
                 // Thêm chi tiết đơn hàng
@@ -52,10 +53,10 @@ namespace AppleShop.Controllers
                     {
                         ProductId = item.ProductId,
                         Quantity = item.Quantity,
-                        Price = item.Price
+                        UnitPrice = item.UnitPrice
                     });
                 }
-
+                
                 _context.Orders.Add(order);
                 _context.SaveChanges();
 

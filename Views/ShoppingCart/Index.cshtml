@@ -26,7 +26,7 @@
                             <img src="@item.ImageUrl" class="img-fluid" alt="@item.ProductName" />
                         </td>
                         <td>@item.ProductName</td>
-                        <td>@item.Price.ToString("N0") ₫</td>
+                        <td>@item.UnitPrice.ToString("N0") ₫</td>
                         <td>
                             <input type="number" value="@item.Quantity" class="form-control quantity-input" style="width: 80px;" data-id="@item.ProductId" min="0" />
                         </td>

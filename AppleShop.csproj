@@ -197,6 +197,14 @@
     <Compile Include="Migrations\202507081420492_AddOrderTables.Designer.cs">
       <DependentUpon>202507081420492_AddOrderTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202507091701536_AddOrderStatus.cs" />
+    <Compile Include="Migrations\202507091701536_AddOrderStatus.Designer.cs">
+      <DependentUpon>202507091701536_AddOrderStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507091723210_RenamePriceToUnitPriceInOrderDetails.cs" />
+    <Compile Include="Migrations\202507091723210_RenamePriceToUnitPriceInOrderDetails.Designer.cs">
+      <DependentUpon>202507091723210_RenamePriceToUnitPriceInOrderDetails.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CartItem.cs" />
@@ -206,6 +214,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderDetail.cs" />
+    <Compile Include="Models\OrderStatus.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductDetailViewModel.cs" />
     <Compile Include="Models\ShoppingCartViewModel.cs" />
@@ -286,6 +295,7 @@
     <Content Include="Areas\Admin\Views\Users\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Users\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\Users\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Orders\Edit.cshtml" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\image-preview.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
@@ -364,6 +374,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202507081420492_AddOrderTables.resx">
       <DependentUpon>202507081420492_AddOrderTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507091701536_AddOrderStatus.resx">
+      <DependentUpon>202507091701536_AddOrderStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507091723210_RenamePriceToUnitPriceInOrderDetails.resx">
+      <DependentUpon>202507091723210_RenamePriceToUnitPriceInOrderDetails.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -15,6 +15,7 @@
                     <th>Mã Đơn hàng</th>
                     <th>Ngày đặt</th>
                     <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
                     <th></th>
                 </tr>
             </thead>
@@ -25,6 +26,19 @@
                         <td>#@order.Id</td>
                         <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
                         <td class="fw-bold">@order.Total.ToString("N0") ₫</td>
+                        <td>
+
+                            @if (order.Status == AppleShop.Models.OrderStatus.Delivered)
+                            {<span class="badge bg-success">Đã nhận hàng</span>}
+                            else if (order.Status == AppleShop.Models.OrderStatus.Shipped)
+                            { <span class="badge bg-info">Đã giao hàng</span>}
+                            else if (order.Status == AppleShop.Models.OrderStatus.Processing)
+                            { <span class="badge bg-primary">Đang xử lý</span>}
+                            else if (order.Status == AppleShop.Models.OrderStatus.Cancelled)
+                            { <span class="badge bg-danger">Đã hủy</span>}
+                            else
+                            { <span class="badge bg-warning">Chờ xử lý</span>}
+                        </td>
                         <td>
                             @Html.ActionLink("Xem chi tiết", "Details", "Orders", new { id = order.Id }, new { @class = "btn btn-info btn-sm" })
                         </td>

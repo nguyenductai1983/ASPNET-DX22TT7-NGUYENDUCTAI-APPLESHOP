@@ -25,7 +25,7 @@ namespace AppleShop.Models
         public string ShipAddress { get; set; }
         [Required]
         public string ShipPhoneNumber { get; set; }
-
+        public OrderStatus Status { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

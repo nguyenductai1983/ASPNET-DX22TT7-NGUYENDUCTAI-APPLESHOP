@@ -1,0 +1,50 @@
+﻿@model AppleShop.Models.Order
+
+@{
+    ViewBag.Title = "Chỉnh sửa Đơn hàng #" + Model.Id;
+}
+
+<h2>@ViewBag.Title</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @* Các trường này cần được gửi đi cùng form để ModelState hợp lệ *@
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.UserId)
+        @Html.HiddenFor(model => model.OrderDate)
+        @Html.HiddenFor(model => model.Total)
+        @Html.HiddenFor(model => model.ShipName)
+        @Html.HiddenFor(model => model.ShipAddress)
+        @Html.HiddenFor(model => model.ShipPhoneNumber)
+
+
+        <div class="mb-3">
+            <label class="form-label">Khách hàng</label>
+            <input type="text" class="form-control" value="@Model.User.Email" readonly />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tổng tiền</label>
+            <input type="text" class="form-control" value="@Model.Total.ToString("N0") ₫" readonly />
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(model => model.Status, "Cập nhật Trạng thái", htmlAttributes: new { @class = "form-label" })
+            @* Dùng EnumDropDownListFor để tạo dropdown từ Enum OrderStatus *@
+            @Html.EnumDropDownListFor(model => model.Status, htmlAttributes: new { @class = "form-select" })
+            @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mt-4">
+            <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
+            @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+}
