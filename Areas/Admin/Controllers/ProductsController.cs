@@ -53,18 +53,31 @@ namespace AppleShop.Areas.Admin.Controllers
                 string description = SanitizeCsvField(item.Description);
                 sb.AppendLine($"{item.Id},{name},{description},{item.Price},{item.Category.Name},{item.IsFeatured}");
             }
+            string fileName = $"DanhSachDonHang_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            using (var memoryStream = new MemoryStream())
+            {
+                // 1. Lấy BOM của UTF-8
+                byte[] bom = Encoding.UTF8.GetPreamble();
+                // 2. Ghi BOM vào đầu stream
+                memoryStream.Write(bom, 0, bom.Length);
 
-            byte[] fileBytes = new UTF8Encoding(true).GetBytes(sb.ToString());
-            return File(fileBytes, "text/csv", "DanhSachSanPham.csv");
+                // 3. Ghi nội dung file (đã được mã hóa UTF-8 không có BOM)
+                byte[] contentBytes = Encoding.UTF8.GetBytes(sb.ToString());
+                memoryStream.Write(contentBytes, 0, contentBytes.Length);
+
+                // 4. Trả về file từ MemoryStream
+                return File(memoryStream.ToArray(), "text/csv", fileName);
+            }
         }
 
         // THÊM ACTION XUẤT FILE PDF
         public ActionResult ExportToPdf()
         {
             var products = db.Products.Include(p => p.Category).ToList();
+            string fileName = $"DanhSachSanPham_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
             return new ViewAsPdf("ProductsPdf", products)
             {
-                FileName = "DanhSachSanPham.pdf",
+                FileName = fileName,
                 PageSize = Rotativa.Options.Size.A4,
                 PageOrientation = Rotativa.Options.Orientation.Portrait,
                 CustomSwitches = "--encoding utf-8"

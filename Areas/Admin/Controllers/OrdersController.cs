@@ -7,6 +7,7 @@ using PagedList;
 using System.Text;
 using Rotativa;
 using System;
+using System.IO;
 using System.Collections.Generic; // Thêm using cho List
 
 namespace AppleShop.Areas.Admin.Controllers
@@ -58,28 +59,48 @@ namespace AppleShop.Areas.Admin.Controllers
 
 
         // Các action khác (ExportToCsv, ExportToPdf, Details, Edit...) giữ nguyên như cũ
+        // CẬP NHẬT LẠI ACTION EXPORTTOCSV
         public FileResult ExportToCsv()
         {
             var orders = db.Orders.Include(o => o.User).ToList();
             var sb = new StringBuilder();
             sb.AppendLine("MaDonHang,KhachHang,NgayDat,TenNguoiNhan,DiaChiGiao,SoDienThoai,TrangThai,TongTien");
+
             foreach (var item in orders)
             {
                 string customerEmail = SanitizeCsvField(item.User?.Email);
                 string shipName = SanitizeCsvField(item.ShipName);
                 string shipAddress = SanitizeCsvField(item.ShipAddress);
-                sb.AppendLine($"{item.Id},{customerEmail},{item.OrderDate:dd/MM/yyyy HH:mm},{shipName},{shipAddress},{item.ShipPhoneNumber},{item.Status},{item.Total}");
+                string orderIdForCsv = $"=\"{item.Id}\"";
+                string phoneNumberForCsv = $"=\"{item.ShipPhoneNumber}\"";
+                sb.AppendLine($"{orderIdForCsv},{customerEmail},{item.OrderDate:dd/MM/yyyy HH:mm},{shipName},{shipAddress},{phoneNumberForCsv},{item.Status},{item.Total}");
+
             }
-            byte[] fileBytes = new UTF8Encoding(true).GetBytes(sb.ToString());
-            return File(fileBytes, "text/csv", "DanhSachDonHang.csv");
+            string fileName = $"DanhSachDonHang_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            // Phương pháp tường minh để đảm bảo có BOM
+            using (var memoryStream = new MemoryStream())
+            {
+                // 1. Lấy BOM của UTF-8
+                byte[] bom = Encoding.UTF8.GetPreamble();
+                // 2. Ghi BOM vào đầu stream
+                memoryStream.Write(bom, 0, bom.Length);
+
+                // 3. Ghi nội dung file (đã được mã hóa UTF-8 không có BOM)
+                byte[] contentBytes = Encoding.UTF8.GetBytes(sb.ToString());
+                memoryStream.Write(contentBytes, 0, contentBytes.Length);
+
+                // 4. Trả về file từ MemoryStream
+                return File(memoryStream.ToArray(), "text/csv", fileName);
+            }
         }
 
         public ActionResult ExportToPdf()
         {
             var orders = db.Orders.Include(o => o.User).ToList();
+            string fileName = $"DanhSachDonHang_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
             return new ViewAsPdf("OrdersPdf", orders)
             {
-                FileName = "DanhSachDonHang.pdf",
+                FileName = fileName,
                 PageSize = Rotativa.Options.Size.A4,
                 PageOrientation = Rotativa.Options.Orientation.Landscape,
                 CustomSwitches = "--encoding utf-8"
